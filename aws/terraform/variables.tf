@@ -24,7 +24,7 @@ variable "keyname" {
 #
 variable "region" {
    //default = "us-east-1"
-   default = "us-east-2"
+   default = "eu-west-1"
 }
 
 #
@@ -38,7 +38,9 @@ variable "ami_id" {
    // us-east-1
    //default = "ami-0bcc094591f354be2"
    // us-east-2
-   default = "ami-0e82959d4ed12de3f"
+   //default = "ami-0e82959d4ed12de3f"
+   // eu-west-1
+   default = "ami-0e66021c377d8c8b4"
 }
 
 #
@@ -59,18 +61,12 @@ variable "env" {
 variable "vpc_cidr_str_vpc" {
    default = "191.100.0.0/16"
 }
-variable "vpc_cidr_str_opsc" {
-   default = "191.100.0.0/24"
-}
-variable "vpc_cidr_str_cassmetr" {
-   default = "191.100.10.0/24"
-}
 variable "vpc_cidr_str_cassapp" {
    default = "191.100.20.0/24"
 }
-variable "vpc_cidr_str_solrspark" {
-   default = "191.100.30.0/24"
-}
+//variable "vpc_cidr_str_solrspark" {
+//   default = "191.100.30.0/24"
+//}
 
 #
 # OpsCenter and DSE workload type string for
@@ -81,36 +77,28 @@ variable "vpc_cidr_str_solrspark" {
 # NOTE: make sure the type string matches the "key" string
 #       in variable "instance_count/instance_type" map
 # 
-variable "opsc_srv_type" {
-   default = "opsc_srv"
-}
-variable "dse_metrics_type" {
-   default = "dse_metrics"
-}
+
 variable "dse_app_dc1_type" {
    default = "dse_app_dc1"
 }
+/*
 variable "dse_app_dc2_type" {
    default = "dse_app_dc2"
 }
+*/
 
 variable "instance_count" {
    type = map
    default = {
-      opsc_srv    = 1
-      dse_metrics = 3
       dse_app_dc1 = 3
-      dse_app_dc2 = 3
+      //dse_app_dc2 = 3
    }
 }
 
 variable "instance_type" {
    type = map
    default = {
-      opsc_srv   =  "t2.2xlarge"  
-      // t2.2xlarge is the minimal DSE requirement
-      dse_metrics = "t2.2xlarge"
       dse_app_dc1 = "t2.2xlarge"
-      dse_app_dc2 = "t2.2xlarge"
+      //dse_app_dc2 = "t2.2xlarge"
    }
 }

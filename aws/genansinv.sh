@@ -19,7 +19,7 @@ pmsg() {
 }
 
 usage() {
-   echo "Error: Only accepts a postivie number as the only (optional) input parameter"
+   echo "Error: Only accepts a positive number as the only (optional) input parameter"
    echo "-- usage: genansinv.sh [<number_of_seeds_per_dc>]"
 }
 
@@ -104,8 +104,7 @@ if [[ "$1" != "" ]]; then
 fi
 
 
-DSE_APPCLUSTER_NAME="MyAppCluster"
-DSE_OPSCCLUSTER_NAME="OpscCluster"
+DSE_APPCLUSTER_NAME="OriginCluster"
 
 
 # Generate Ansible inventory file for multi-DC DSE cluster (no OpsCenter)
@@ -114,7 +113,6 @@ DSE_ANSINV_FILE="dse_ansHosts"
 cat /dev/null > $DSE_ANSINV_FILE
 pmsg "[dse_app:children]" $DSE_ANSINV_FILE
 pmsg "dse_app_dc1" $DSE_ANSINV_FILE
-pmsg "dse_app_dc2" $DSE_ANSINV_FILE
 pmsg "" $DSE_ANSINV_FILE
 
 pmsg "[dse_app_dc1]" $DSE_ANSINV_FILE
@@ -122,23 +120,6 @@ seedmarked=0
 for ((i=0; i<${#dse_nodetypes[*]}; i++));
 do
    if [[ ${dse_nodetypes[i]} == *"dse_app_dc1"* ]]; then
-      dc_name=$(echo "${dse_nodetypes[i]}" | cut -d'.' -f1 | cut -d'_' -f3 )
-
-      if [[ $seedmarked < $SEED_PER_DC ]]; then
-         pmsg "${public_ips[i]} private_ip=${private_ips[i]} seed=true dc=$dc_name rack=RAC1 vnode=1 initial_token=" $DSE_ANSINV_FILE
-         seedmarked=$((seedmarked+1))
-      else
-         pmsg "${public_ips[i]} private_ip=${private_ips[i]} seed=false dc=$dc_name rack=RAC1 vnode=1 initial_token=" $DSE_ANSINV_FILE
-      fi
-   fi
-done
-pmsg "" $DSE_ANSINV_FILE
-
-pmsg "[dse_app_dc2]" $DSE_ANSINV_FILE
-seedmarked=0
-for ((i=0; i<${#dse_nodetypes[*]}; i++));
-do
-   if [[ ${dse_nodetypes[i]} == *"dse_app_dc2"* ]]; then
       dc_name=$(echo "${dse_nodetypes[i]}" | cut -d'.' -f1 | cut -d'_' -f3 )
 
       if [[ $seedmarked < $SEED_PER_DC ]]; then
@@ -160,82 +141,6 @@ pmsg "spark_enabled=0" $DSE_ANSINV_FILE
 pmsg "graph_enabled=0" $DSE_ANSINV_FILE
 pmsg "auto_bootstrap=1" $DSE_ANSINV_FILE
 pmsg "" $DSE_ANSINV_FILE
-pmsg "[dse_app_dc2:vars]" $DSE_ANSINV_FILE
-pmsg "solr_enabled=1" $DSE_ANSINV_FILE
-pmsg "spark_enabled=0" $DSE_ANSINV_FILE
-pmsg "graph_enabled=0" $DSE_ANSINV_FILE
-pmsg "auto_bootstrap=1" $DSE_ANSINV_FILE
-pmsg "" $DSE_ANSINV_FILE
-pmsg "" $DSE_ANSINV_FILE
-pmsg "" $DSE_ANSINV_FILE
-
-
-pmsg "[dse_metrics]" $DSE_ANSINV_FILE
-opscsrvmarked=0
-seedmarked=0
-for ((i=0; i<${#dse_nodetypes[*]}; i++));
-do
-   if [[ ${dse_nodetypes[i]} == *"dse_metrics"* ]]; then
-      if [[ $seedmarked < $SEED_PER_DC ]]; then
-         pmsg "${public_ips[i]} private_ip=${private_ips[i]} seed=true dc=dc1 rack=RAC1 vnode=1 initial_token=" $DSE_ANSINV_FILE
-         seedmarked=$((seedmarked+1))
-      else
-         pmsg "${public_ips[i]} private_ip=${private_ips[i]} seed=false dc=dc1 rack=RAC1 vnode=1 initial_token=" $DSE_ANSINV_FILE
-      fi
-   fi
-done
-pmsg "" $DSE_ANSINV_FILE
-
-pmsg "[dse_metrics:vars]" $DSE_ANSINV_FILE
-pmsg "cluster_name=$DSE_OPSCCLUSTER_NAME" $DSE_ANSINV_FILE
-pmsg "solr_enabled=0" $DSE_ANSINV_FILE
-pmsg "spark_enabled=0" $DSE_ANSINV_FILE
-pmsg "graph_enabled=0" $DSE_ANSINV_FILE
-pmsg "auto_bootstrap=1" $DSE_ANSINV_FILE
-pmsg "" $DSE_ANSINV_FILE
-pmsg "" $DSE_ANSINV_FILE
-pmsg "" $DSE_ANSINV_FILE
-
-
-
-pmsg "[opsc_srv]" $DSE_ANSINV_FILE
-opscSrvPrivateIP=''
-for ((i=0; i<${#dse_nodetypes[*]}; i++));
-do
-   if [[ ${dse_nodetypes[i]} == *"opsc_srv"* ]]; then
-      # only install OpsCenter server on one host
-      if [[ $opscsrvmarked == 0 ]]; then
-         opscSrvNodeStr="${public_ips[i]} private_ip=${private_ips[i]}" 
-         opscSrvPrivateIp="${private_ips[i]}"
-         opscsrvmarked=1
-      fi
-   fi
-done
-pmsg "$opscSrvNodeStr" $DSE_ANSINV_FILE
-pmsg "" $DSE_ANSINV_FILE
-pmsg "" $DSE_ANSINV_FILE
-pmsg "" $DSE_ANSINV_FILE
-
-
-
-# Generate Ansible inventory file for datastax-agents
-pmsg "[datastax_agent]" $DSE_ANSINV_FILE
-for ((i=0; i<${#dse_nodetypes[*]}; i++));
-do
-   if [[ ${dse_nodetypes[i]} != *"opsc_srv"* ]]; then
-      pmsg "${public_ips[i]} private_ip=${private_ips[i]} opsc_srv_ip=$opscSrvPrivateIp" $DSE_ANSINV_FILE
-   fi
-done
-pmsg "" $DSE_ANSINV_FILE
-pmsg "" $DSE_ANSINV_FILE
-pmsg "" $DSE_ANSINV_FILE
-
-
-
-pmsg "[osparmchg:children]" $DSE_ANSINV_FILE
-pmsg "dse_app" $DSE_ANSINV_FILE
-pmsg "dse_metrics" $DSE_ANSINV_FILE
-
 
 # Copy the generated ansible inventory file to the proper place
 cp $DSE_ANSINV_FILE ./ansible/hosts
