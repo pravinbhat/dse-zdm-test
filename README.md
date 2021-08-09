@@ -16,18 +16,6 @@
 
 # 1. NOTES
 
-**Updates on ***09/26/2020*****
-
-* Retested with: 
-  * Terraform version: 0.13.3
-  * Ansible version: 2.9.13
-
-* Updates
-  * Terraform syntax changes for version 0.12 and later.
-  * Modify "genansinv.sh" to reflect terraform.state format change.
-  * Ansible updates that are aligned with changes made in [dseansible](https://github.com/yabinmeng/dseansible) respository.
-  * Use a separate and dedicated OpsCenter server (instead of using the first DSE metrics cluster node)
-
 **Updates on ***08/08/2021*****
 
 * Retested with: 
@@ -40,20 +28,25 @@
 ---
 ---
 
+This repository was forked from Yabin Meng's excellent repository  [here](https://github.com/yabinmeng/terradse). The original version contains a much more comprehensive automation suite
+to provision, install and configure a multi-DC DSE cluster monitored by OpsCenter (which stores its monitoring data into a dedicated metrics cluster). I highly recommend to use Yabin's repo
+for general DSE installations that follow the recommended configuration and deployment guidelines.
+
+The automation in this repository has been simplified to provision a simple, single-DC DSE cluster without OpsCenter. This is useful for testing purposes, when a full installation would not be necessary
+and reducing the installation footprint is preferable.
 
 The scripts in this repository have 3 major parts:
 1. Terraform scripts to launch the required AWS resources (EC2 instances, security groups, etc.) based on the target DSE cluster topology.
 2. Ansible playbooks to install and configure DSE on the provisioned AWS EC2 instances.
 3. Linux bash scripts to 
-   1. generate the ansible host inventory file (required by the ansible playbooks) out of the terraform state output
+   1. generate the ansible host inventory file (required by the ansible playbooks) from the terraform state output
    2. launch the terraform scripts and ansible playbooks
 
 
 # 2. Terraform Introduction and Cluster Topology
 
-Terraform is a great tool to plan, create, and manage infrastructure as code. Through a mechanism called ***providers***, it offers an agnostic way to manage various infrastructure resources (e.g. physical machines, VMs, networks, containers, etc.) from different underlying platforms such as AWS, Azure, OpenStack, and so on.
-
-The Terraform script will provision one DSE cluster with a single DC with a default of three nodes (the number of nodes per DC is configurable through Terraform variables). The script could support a second DC but for the moment this has been commented out for simplicity. 
+The Terraform script will provision one DSE cluster with a single DC with a default of three nodes (the number of nodes per DC is configurable through Terraform variables). 
+The script could support a second DC but for the moment this has been commented out for simplicity. 
 
 # 3. Use Terraform to Launch Infrastructure Resources
 
@@ -61,7 +54,7 @@ The Terraform script will provision one DSE cluster with a single DC with a defa
 
 ## 3.1. Pre-requisites
 
-In order to run the terraform script sucessfully, the following procedures need to be executed in advance:
+In order to run the Terraform script successfully, the following procedures need to be executed in advance:
 
 1. Install Terraform software on the computer to run the script
 2. Install and configure AWS CLI properly. Make sure you have an AWS account that have the enough privilege to create and configure AWS resources.
