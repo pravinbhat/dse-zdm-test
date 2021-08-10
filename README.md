@@ -68,6 +68,9 @@ cd aws
 
 # connect to instance to check nodetool status for instance
 ssh -i ~/.ssh/origin_key ubuntu@xx.xx.xx.xx
+
+# open cqlsh
+cqlsh `hostname -I` -u cassandra -p cassandra
 ```
 
 
