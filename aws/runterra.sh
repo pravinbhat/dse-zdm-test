@@ -4,6 +4,14 @@ cd terraform
 
 echo
 echo "##################################"
+echo "# initialize terraform ..."
+echo "##################################"
+echo
+terraform init
+echo
+
+echo
+echo "##################################"
 echo "# calculate the terraform plan ..."
 echo "##################################"
 echo

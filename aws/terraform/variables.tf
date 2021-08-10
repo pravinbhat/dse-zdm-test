@@ -9,7 +9,7 @@ variable "ssh_key_localpath" {
 # The local private SSH key file name 
 #
 variable "ssh_key_filename" {
-   default = "id_rsa_aws"
+   default = "origin_key"
 }
 
 #

@@ -58,7 +58,7 @@ In order to run the Terraform script successfully, the following procedures need
 
 1. Install Terraform software on the computer to run the script
 2. Install and configure AWS CLI properly. Make sure you have an AWS account that have the enough privilege to create and configure AWS resources.
-3. Create a SSH key-pair. The script automatically uploads the public key to AWS (to create an AWS key pair resource), so the launched AWS EC2 instances can be connected through SSH. The names of the SSH key-pair, by default, should be “id_rsa_aws and id_rsa_aws.pub”. If you choose other names, please make sure to update the Terraform configuration variable accordingly.
+3. Create a SSH key-pair. The script automatically uploads the public key to AWS (to create an AWS key pair resource), so the launched AWS EC2 instances can be connected through SSH. The names of the SSH key-pair, by default, should be “origin_key" and "origin_key.pub”. If you choose other names, please make sure to update the Terraform configuration variable accordingly.
 
 ## 3.2. Provision AWS Resources 
 
