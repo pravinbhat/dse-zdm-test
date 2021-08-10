@@ -47,6 +47,8 @@ The scripts in this repository have 3 major parts:
 
 # TL;DR
 
+First generated an ssh keypair
+
 ```
 ssh-keygen -t rsa
 ```
@@ -64,7 +66,7 @@ cd aws
 # run ansible to install dse cluster
 ./runansi.sh
 
-# connect to instance to check nodetool status for example
+# connect to instance to check nodetool status for instance
 ssh -i ~/.ssh/origin_key ubuntu@xx.xx.xx.xx
 ```
 
