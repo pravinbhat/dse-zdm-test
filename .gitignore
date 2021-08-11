@@ -8,3 +8,5 @@ aws/terraform/.terraform.lock.hcl
 aws/terraform/terraform.tfstate
 aws/terraform/terraform.tfstate.backup
 /.idea/
+/terraform.tfstate
+/aws/terraform/myplan

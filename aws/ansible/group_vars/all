@@ -2,7 +2,7 @@
 # Home directory for backup 
 backup_homedir: /home/automaton/dse_update_bkup
 
-### Target/Current DSE verson
+### Target/Current DSE version
 #   - dse_ver_target:
 #     for fresh install, dse_ver_target is the version to be installed
 #     for upgrade, dse_ver_target is the version to be upgraded to
@@ -35,11 +35,11 @@ vnode_token_num: 8
 
 ## DSE cluster name and other configuration items
 #
-cluster_name: MyTestCluster
+cluster_name: OriginCluster
 dse_data_homedir: /home/automaton/dse_data
 data_file_directories: "{{ dse_data_homedir }}/cassandra"
 commitlog_directory: "{{ dse_data_homedir }}/commitlog"
-saved_caches_directory: "{{ dse_data_homedir }}/saved_cahces"
+saved_caches_directory: "{{ dse_data_homedir }}/saved_caches"
 hints_directory: "{{ dse_data_homedir }}/hints"
 cdc_raw_directory: "{{ dse_data_homedir }}/cdc_raw"
 metadata_directory: "{{ dse_data_homedir }}/metadata"

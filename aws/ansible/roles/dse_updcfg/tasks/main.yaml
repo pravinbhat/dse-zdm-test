@@ -166,3 +166,18 @@
   with_items:
     - { regexp: 'dc\=', line: 'dc={{ dc }}' }
     - { regexp: 'rack\=', line: 'rack={{ rack }}' }
+
+- name: Enable internal authentication (dse.yaml)
+  when: internal_auth_enabled|int == 1
+  blockinfile:
+    dest: "{{ dse_config_dir }}/dse.yaml"
+    marker: "# authentication_options:"
+    block: |
+      authentication_options:
+        enabled: true
+        default_scheme: internal
+        other_schemes: []
+        scheme_permissions: false
+        allow_digest_with_kerberos: true
+        plain_text_without_ssl: warn
+        transitional_mode: disabled

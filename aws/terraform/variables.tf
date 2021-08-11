@@ -47,7 +47,7 @@ variable "ami_id" {
 # AWS resource tag identifier
 #
 variable "tag_identifier" {
-   default = "zzzTest"
+   default = "origin"
 } 
 
 #
@@ -67,6 +67,9 @@ variable "vpc_cidr_str_cassapp" {
 //variable "vpc_cidr_str_solrspark" {
 //   default = "191.100.30.0/24"
 //}
+variable "vpc_cidr_str_userapp" {
+   default = "191.100.40.0/24"
+}
 
 #
 # OpsCenter and DSE workload type string for
@@ -86,12 +89,16 @@ variable "dse_app_dc2_type" {
    default = "dse_app_dc2"
 }
 */
+variable "user_application_client_type" {
+   default = "user_application_client"
+}
 
 variable "instance_count" {
    type = map
    default = {
       dse_app_dc1 = 3
       //dse_app_dc2 = 3
+      user_application_client = 1
    }
 }
 
@@ -100,5 +107,6 @@ variable "instance_type" {
    default = {
       dse_app_dc1 = "t2.2xlarge"
       //dse_app_dc2 = "t2.2xlarge"
+      user_application_client = "t2.micro"
    }
 }

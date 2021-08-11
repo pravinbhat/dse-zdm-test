@@ -64,7 +64,7 @@ resource "aws_security_group" "sg_dse_node" {
 
    # DSEFS inter-node communication port
    ingress {
-      from_port = 5599 
+      from_port = 5599
       to_port = 5599
       protocol = "tcp"
       security_groups = [aws_security_group.sg_internal_only.id]

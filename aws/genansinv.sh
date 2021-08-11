@@ -140,6 +140,7 @@ pmsg "solr_enabled=0" $DSE_ANSINV_FILE
 pmsg "spark_enabled=0" $DSE_ANSINV_FILE
 pmsg "graph_enabled=0" $DSE_ANSINV_FILE
 pmsg "auto_bootstrap=1" $DSE_ANSINV_FILE
+pmsg "internal_auth_enabled=1" $DSE_ANSINV_FILE
 pmsg "" $DSE_ANSINV_FILE
 
 # Copy the generated ansible inventory file to the proper place
