@@ -42,6 +42,40 @@ The scripts in this repository have 3 major parts:
    1. generate the ansible host inventory file (required by the ansible playbooks) from the terraform state output
    2. launch the terraform scripts and ansible playbooks
 
+---
+---
+
+# TL;DR
+
+First generated an ssh keypair
+
+```
+ssh-keygen -t rsa
+```
+
+File for generated key should be `~/.ssh/origin_key`
+
+```
+cd aws
+# run terraform script to create aws infrastructure
+./runterra.sh
+
+# generate ansible inventory based on terraform created servers
+./genansinv.sh
+
+# run ansible to install dse cluster
+./runansi.sh
+
+# connect to instance to check nodetool status for instance
+ssh -i ~/.ssh/origin_key ubuntu@xx.xx.xx.xx
+
+# open cqlsh
+cqlsh `hostname -I` -u cassandra -p cassandra
+```
+
+
+---
+---
 
 # 2. Terraform Introduction and Cluster Topology
 
