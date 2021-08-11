@@ -27,32 +27,33 @@ resource "aws_internet_gateway" "ig_dse" {
 #
 resource "aws_route_table" "rt_dse" {
     vpc_id                  = aws_vpc.vpc_dse.id
-
-    route {
-        cidr_block = "0.0.0.0/0"
-        gateway_id = aws_internet_gateway.ig_dse.id
-    }
-
     tags = {
         Name = "${var.tag_identifier}-rt_dse"
     }
 }
 
+resource "aws_route" "dse_to_igw" {
+  route_table_id = aws_route_table.rt_dse.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id = aws_internet_gateway.ig_dse.id
+}
+
+
 ######################################################
 # Create a custom route table for the user application
 # It is identical to the cluster one, but it simulates the user app having a different rt
 #
-resource "aws_route_table" "rt_userapp" {
+resource "aws_route_table" "rt_user_app" {
   vpc_id                  = aws_vpc.vpc_dse.id
-
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.ig_dse.id
-  }
-
   tags = {
-    Name = "${var.tag_identifier}-rt_userapp"
+    Name = "${var.tag_identifier}-rt_user_app"
   }
+}
+
+resource "aws_route" "user_app_to_igw" {
+  route_table_id = aws_route_table.rt_user_app.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id = aws_internet_gateway.ig_dse.id
 }
 
 ######################################################
@@ -98,10 +99,10 @@ resource "aws_subnet" "sn_user_app" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "${var.tag_identifier}-sn_dse_userapp"
+    Name = "${var.tag_identifier}-sn_user_app"
   }
 }
-resource "aws_route_table_association" "rt_assoc_sn_dse_userapp" {
-  route_table_id          = aws_route_table.rt_userapp.id
+resource "aws_route_table_association" "rt_assoc_sn_user_app" {
+  route_table_id          = aws_route_table.rt_user_app.id
   subnet_id               = aws_subnet.sn_user_app.id
 }
