@@ -107,6 +107,6 @@ variable "instance_type" {
    default = {
       dse_app_dc1 = "t2.2xlarge"
       //dse_app_dc2 = "t2.2xlarge"
-      user_application_client = "t2.micro"
+      user_application_client = "t2.large"
    }
 }

@@ -62,13 +62,6 @@ resource "aws_security_group" "sg_dse_node" {
       security_groups = [aws_security_group.sg_internal_only.id]
    }
 
-   # DSEFS inter-node communication port
-   ingress {
-      from_port = 5599
-      to_port = 5599
-      protocol = "tcp"
-      security_groups = [aws_security_group.sg_internal_only.id]
-   }
 
    # DSE inter-node cluster communication port
    # - 7000: No SSL
@@ -76,14 +69,6 @@ resource "aws_security_group" "sg_dse_node" {
    ingress {
       from_port = 7000
       to_port = 7001
-      protocol = "tcp"
-      security_groups = [aws_security_group.sg_internal_only.id]
-   }
-
-   # Spark master inter-node communication port
-   ingress {
-      from_port = 7077
-      to_port = 7077
       protocol = "tcp"
       security_groups = [aws_security_group.sg_internal_only.id]
    }
@@ -104,20 +89,21 @@ resource "aws_security_group" "sg_dse_node" {
       security_groups = [aws_security_group.sg_internal_only.id]
    }
 
-   # DSE Search web access port
-   ingress {
-      from_port = 8983
-      to_port = 8983
-      protocol = "tcp"
-      security_groups = [aws_security_group.sg_internal_only.id]
-   }
-
    # Native transport port
    ingress {
       from_port = 9042
       to_port = 9042
       protocol = "tcp"
       security_groups = [aws_security_group.sg_internal_only.id]
+   }
+
+   # Rule added to enable the Cloudgate proxy to connect to the DSE nodes over VPC peering
+   # Native transport port
+   ingress {
+      from_port = 9042
+      to_port = 9042
+      protocol = "tcp"
+      cidr_blocks = ["172.18.0.0/16"]
    }
 
    # Native transport port, with SSL
@@ -128,6 +114,15 @@ resource "aws_security_group" "sg_dse_node" {
       security_groups = [aws_security_group.sg_internal_only.id]
    }
 
+   # Rule added to enable the Cloudgate proxy to connect to the DSE nodes over VPC peering
+   # Native transport port, with SSL
+   ingress {
+      from_port = 9142
+      to_port = 9142
+      protocol = "tcp"
+      cidr_blocks = ["172.18.0.0/16"]
+   }
+
    # Client (Thrift) port
    ingress {
       from_port = 9160
@@ -136,19 +131,4 @@ resource "aws_security_group" "sg_dse_node" {
       security_groups = [aws_security_group.sg_internal_only.id]
    }
 
-   # Spark SQL Thrift server port
-   ingress {
-      from_port = 10000
-      to_port = 10000
-      protocol = "tcp"
-      security_groups = [aws_security_group.sg_internal_only.id]
-   }
-
-   # Stomp port: opsc -> agent
-   ingress {
-      from_port = 61621
-      to_port = 61621
-      protocol = "tcp"
-      security_groups = [aws_security_group.sg_internal_only.id]
-   }
 }
