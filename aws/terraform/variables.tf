@@ -23,24 +23,27 @@ variable "keyname" {
 # Default AWS region
 #
 variable "region" {
-   //default = "us-east-1"
-   default = "eu-west-1"
+   default = "us-west-1"
 }
 
 #
 # Default OS image: Ubuntu
 #
 variable "ami_id" {
-   # Ubuntu Server 16.04 LTS (HVM), SSD Volume Type
-   // us-east-1
-   #default = "ami-10547475"
-   # Ubuntu Server 18.04 LTS (HVM), SSD Volume Type (64-bit x86)
-   // us-east-1
-   //default = "ami-0bcc094591f354be2"
-   // us-east-2
-   //default = "ami-0e82959d4ed12de3f"
-   // eu-west-1
-   default = "ami-0e66021c377d8c8b4"
+   
+  # Ubuntu Server 18.04 LTS (HVM), SSD Volume Type (64-bit x86)
+
+  // us-east-1
+  //default = "ami-0bcc094591f354be2"
+
+  // us-east-2
+  //default = "ami-0e82959d4ed12de3f"
+
+  // eu-west-1
+  //default = "ami-0e66021c377d8c8b4"
+
+  // us-west-1
+  default = "ami-0e17790f211795d99"
 }
 
 #
@@ -98,7 +101,7 @@ variable "instance_count" {
    default = {
       dse_app_dc1 = 3
       //dse_app_dc2 = 3
-      user_application_client = 1
+      user_application_client = 2 
    }
 }
 
