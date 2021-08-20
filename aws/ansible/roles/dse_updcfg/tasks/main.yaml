@@ -181,3 +181,14 @@
         allow_digest_with_kerberos: true
         plain_text_without_ssl: warn
         transitional_mode: disabled
+
+- name: Enable internal authentication (dse.yaml)
+  when: internal_auth_enabled|int == 1
+  blockinfile:
+    dest: "{{ dse_config_dir }}/dse.yaml"
+    marker: "# authorization_options:"
+    block: |
+      authorization_options:
+        enabled: true
+        transitional_mode: disabled
+        allow_row_level_security: false
