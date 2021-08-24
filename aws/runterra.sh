@@ -30,4 +30,5 @@ if [[ "$yesno" == "yes" ]]; then
    terraform apply myplan
 fi
 
+terraform output > origin_output.txt
 cd ..
