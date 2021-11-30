@@ -23,7 +23,7 @@ variable "keyname" {
 # Default AWS region
 #
 variable "region" {
-  default = "us-west-1"
+  default = "us-east-1"
 }
 
 #
@@ -34,7 +34,8 @@ variable "ami_id" {
   # Ubuntu Server 18.04 LTS (HVM), SSD Volume Type (64-bit x86)
 
   // us-east-1
-  //default = "ami-0bcc094591f354be2"
+  // As of Nov 29 2021
+  default = "ami-09d5bd376ff640e79"
 
   // us-east-2
   //default = "ami-0e82959d4ed12de3f"
@@ -43,7 +44,7 @@ variable "ami_id" {
   //default = "ami-0e66021c377d8c8b4"
 
   // us-west-1
-  default = "ami-0e17790f211795d99"
+  //default = "ami-0e17790f211795d99"
 }
 
 #
