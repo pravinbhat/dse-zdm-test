@@ -34,8 +34,8 @@ variable "ami_id" {
   # Ubuntu Server 18.04 LTS (HVM), SSD Volume Type (64-bit x86)
 
   // us-east-1
-  // As of Nov 29 2021
-  default = "ami-09d5bd376ff640e79"
+  default = "ami-0bcc094591f354be2"
+
 
   // us-east-2
   //default = "ami-0e82959d4ed12de3f"
