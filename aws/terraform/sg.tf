@@ -2,27 +2,26 @@
 # Security group rules:
 # - open opscenter-agent ports
 #
-resource "aws_security_group" "sg_internal_only" {
-  name   = "sg_internal_only"
-  vpc_id = aws_vpc.vpc_dse.id
+resource "aws_security_group" "sg_dse_zdm_test_internal_only" {
+  name   = "sg_dse_zdm_test_internal_only"
+  vpc_id = aws_vpc.vpc_dse_zdm_test.id
 
   tags = {
-    Name        = "${var.tag_identifier}-sg_internal_only"
+    Name        = "${var.tag_identifier}-sg_dse_zdm_test_internal_only"
     Environment = var.env
   }
 }
-
 
 # 
 # Security group rules:
 # - open SSH port (22) from anywhere
 #
-resource "aws_security_group" "sg_ssh" {
-  name   = "sg_ssh"
-  vpc_id = aws_vpc.vpc_dse.id
+resource "aws_security_group" "sg_dse_zdm_test_ssh" {
+  name   = "sg_dse_zdm_test_ssh"
+  vpc_id = aws_vpc.vpc_dse_zdm_test.id
 
   tags = {
-    Name        = "${var.tag_identifier}-sg_ssh"
+    Name        = "${var.tag_identifier}-sg_dse_zdm_test_ssh"
     Environment = var.env
   }
 
@@ -45,12 +44,12 @@ resource "aws_security_group" "sg_ssh" {
 # Security group rules:
 # - Ports required for proper DSE function
 #
-resource "aws_security_group" "sg_dse_node" {
-  name   = "sg_dse_node"
-  vpc_id = aws_vpc.vpc_dse.id
+resource "aws_security_group" "sg_dse_zdm_test_node" {
+  name   = "sg_dse_zdm_test_node"
+  vpc_id = aws_vpc.vpc_dse_zdm_test.id
 
   tags = {
-    Name        = "${var.tag_identifier}-sg_dse_node"
+    Name        = "${var.tag_identifier}-sg_dse_zdm_test_node"
     Environment = var.env
   }
 
@@ -59,7 +58,7 @@ resource "aws_security_group" "sg_dse_node" {
     from_port       = 0
     to_port         = 0
     protocol        = "-1"
-    security_groups = [aws_security_group.sg_internal_only.id]
+    security_groups = [aws_security_group.sg_dse_zdm_test_internal_only.id]
   }
 
 
@@ -70,7 +69,7 @@ resource "aws_security_group" "sg_dse_node" {
     from_port       = 7000
     to_port         = 7001
     protocol        = "tcp"
-    security_groups = [aws_security_group.sg_internal_only.id]
+    security_groups = [aws_security_group.sg_dse_zdm_test_internal_only.id]
   }
 
   # JMX monitoring port
@@ -78,7 +77,7 @@ resource "aws_security_group" "sg_dse_node" {
     from_port       = 7199
     to_port         = 7199
     protocol        = "tcp"
-    security_groups = [aws_security_group.sg_internal_only.id]
+    security_groups = [aws_security_group.sg_dse_zdm_test_internal_only.id]
   }
 
   # Port for inter-node messaging service
@@ -86,7 +85,7 @@ resource "aws_security_group" "sg_dse_node" {
     from_port       = 8609
     to_port         = 8609
     protocol        = "tcp"
-    security_groups = [aws_security_group.sg_internal_only.id]
+    security_groups = [aws_security_group.sg_dse_zdm_test_internal_only.id]
   }
 
   # Native transport port
@@ -94,7 +93,7 @@ resource "aws_security_group" "sg_dse_node" {
     from_port       = 9042
     to_port         = 9042
     protocol        = "tcp"
-    security_groups = [aws_security_group.sg_internal_only.id]
+    security_groups = [aws_security_group.sg_dse_zdm_test_internal_only.id]
   }
 
   # Rule added to enable the Cloudgate proxy to connect to the DSE nodes over VPC peering
@@ -111,7 +110,7 @@ resource "aws_security_group" "sg_dse_node" {
     from_port       = 9142
     to_port         = 9142
     protocol        = "tcp"
-    security_groups = [aws_security_group.sg_internal_only.id]
+    security_groups = [aws_security_group.sg_dse_zdm_test_internal_only.id]
   }
 
   # Rule added to enable the Cloudgate proxy to connect to the DSE nodes over VPC peering
@@ -128,7 +127,7 @@ resource "aws_security_group" "sg_dse_node" {
     from_port       = 9160
     to_port         = 9160
     protocol        = "tcp"
-    security_groups = [aws_security_group.sg_internal_only.id]
+    security_groups = [aws_security_group.sg_dse_zdm_test_internal_only.id]
   }
 
 }

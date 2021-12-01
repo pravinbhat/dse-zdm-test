@@ -16,7 +16,7 @@ variable "ssh_key_filename" {
 # AWS EC2 key-pair name
 #
 variable "keyname" {
-  default = "dse-sshkey"
+  default = "dse-zdm-test-sshkey"
 }
 
 #
@@ -58,59 +58,43 @@ variable "tag_identifier" {
 # Environment description
 #
 variable "env" {
-  default = "automation_test"
+  default = "zdm_test_automation"
 }
 
 ## CIDR for VPC and subnets
 variable "vpc_cidr_str_vpc" {
   default = "191.100.0.0/16"
 }
-variable "vpc_cidr_str_cassapp" {
+variable "vpc_cidr_str_core" {
   default = "191.100.20.0/24"
 }
-//variable "vpc_cidr_str_solrspark" {
-//   default = "191.100.30.0/24"
-//}
-variable "vpc_cidr_str_userapp" {
+variable "vpc_cidr_str_zdm_test" {
+  default = "191.100.30.0/24"
+}
+variable "vpc_cidr_str_olap" {
   default = "191.100.40.0/24"
 }
 
-#
-# OpsCenter and DSE workload type string for
-# - "OpsCenter server node"
-# - "DSE metrics cluster node"
-# - "DSE application cluster node - DC1"
-# - "DSE application cluster node - DC2"
-# NOTE: make sure the type string matches the "key" string
-#       in variable "instance_count/instance_type" map
-# 
+variable "dse_core_dc1_type" {
+  default = "dse_core_dc1"
+}
 
-variable "dse_app_dc1_type" {
-  default = "dse_app_dc1"
-}
-/*
-variable "dse_app_dc2_type" {
-   default = "dse_app_dc2"
-}
-*/
-variable "user_application_client_type" {
-  default = "user_application_client"
+variable "dse_olap_dc1_type" {
+  default = "dse_olap_dc1"
 }
 
 variable "instance_count" {
   type = map(any)
   default = {
-    dse_app_dc1 = 3
-    //dse_app_dc2 = 3
-    user_application_client = 2
+    dse_core_dc1 = 3
+    dse_olap_dc1 = 3
   }
 }
 
 variable "instance_type" {
   type = map(any)
   default = {
-    dse_app_dc1 = "t2.2xlarge"
-    //dse_app_dc2 = "t2.2xlarge"
-    user_application_client = "t2.large"
+    dse_core_dc1 = "t2.2xlarge"
+    dse_olap_dc1 = "t2.2xlarge"
   }
 }

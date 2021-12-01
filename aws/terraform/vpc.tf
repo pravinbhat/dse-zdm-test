@@ -1,12 +1,12 @@
 ######################################################
 # Create a custom VPC. 
 #
-resource "aws_vpc" "vpc_dse" {
+resource "aws_vpc" "vpc_dse_zdm_test" {
   cidr_block           = var.vpc_cidr_str_vpc
   enable_dns_hostnames = true
 
   tags = {
-    Name = "${var.tag_identifier}-vpc_dse"
+    Name = "${var.tag_identifier}-vpc_dse_zdm_test"
   }
 }
 
@@ -14,95 +14,78 @@ resource "aws_vpc" "vpc_dse" {
 ######################################################
 # Create an internet gateway for public/internet access
 #
-resource "aws_internet_gateway" "ig_dse" {
-  vpc_id = aws_vpc.vpc_dse.id
+resource "aws_internet_gateway" "ig_dse_zdm_test" {
+  vpc_id = aws_vpc.vpc_dse_zdm_test.id
 
   tags = {
-    Name = "${var.tag_identifier}-ig_dse"
+    Name = "${var.tag_identifier}-ig_dse_zdm_test"
   }
 }
 
 ######################################################
-# Create a custom route table for the cluster
+# Create a custom route table for the core cluster
 #
-resource "aws_route_table" "rt_dse" {
-  vpc_id = aws_vpc.vpc_dse.id
+resource "aws_route_table" "rt_dse_core_zdm_test" {
+  vpc_id = aws_vpc.vpc_dse_zdm_test.id
   tags = {
-    Name = "${var.tag_identifier}-rt_dse"
+    Name = "${var.tag_identifier}-rt_dse_core_zdm_test"
   }
 }
 
-resource "aws_route" "dse_to_igw" {
-  route_table_id         = aws_route_table.rt_dse.id
+resource "aws_route" "dse_core_to_igw_zdm_test" {
+  route_table_id         = aws_route_table.rt_dse_core_zdm_test.id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.ig_dse.id
+  gateway_id             = aws_internet_gateway.ig_dse_zdm_test.id
 }
 
 
 ######################################################
-# Create a custom route table for the user application
-# It is identical to the cluster one, but it simulates the user app having a different rt
+# Create a custom route table for the olap cluster
+# It is identical to the core cluster, but it simulates olap having a different rt
 #
-resource "aws_route_table" "rt_user_app" {
-  vpc_id = aws_vpc.vpc_dse.id
+resource "aws_route_table" "rt_dse_olap_zdm_test" {
+  vpc_id = aws_vpc.vpc_dse_zdm_test.id
   tags = {
-    Name = "${var.tag_identifier}-rt_user_app"
+    Name = "${var.tag_identifier}-rt_dse_olap_zdm_test"
   }
 }
 
-resource "aws_route" "user_app_to_igw" {
-  route_table_id         = aws_route_table.rt_user_app.id
+resource "aws_route" "dse_olap_to_igw_zdm_test" {
+  route_table_id         = aws_route_table.rt_dse_olap_zdm_test.id
   destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.ig_dse.id
+  gateway_id             = aws_internet_gateway.ig_dse_zdm_test.id
 }
 
 ######################################################
 # Create subnets
 #
 
-# Subnet for DSE core - application cluster
-resource "aws_subnet" "sn_dse_cassapp" {
-  vpc_id                  = aws_vpc.vpc_dse.id
-  cidr_block              = var.vpc_cidr_str_cassapp
+# Subnet for DSE core
+resource "aws_subnet" "sn_dse_core_zdm_test" {
+  vpc_id                  = aws_vpc.vpc_dse_zdm_test.id
+  cidr_block              = var.vpc_cidr_str_core
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "${var.tag_identifier}-sn_dse_cassapp"
+    Name = "${var.tag_identifier}-sn_dse_core_zdm_test"
   }
 }
-resource "aws_route_table_association" "rt_assoc_sn_dse_cassapp" {
-  route_table_id = aws_route_table.rt_dse.id
-  subnet_id      = aws_subnet.sn_dse_cassapp.id
+resource "aws_route_table_association" "rt_assoc_sn_dse_core_zdm_test" {
+  route_table_id = aws_route_table.rt_dse_core_zdm_test.id
+  subnet_id      = aws_subnet.sn_dse_core_zdm_test.id
 }
 
-# Subnet for DSE advanced workloads - application cluster
-/*
-resource "aws_subnet" "sn_dse_solrspark" {    
-    vpc_id                  = aws_vpc.vpc_dse.id
-    cidr_block              = var.vpc_cidr_str_solrspark
-    map_public_ip_on_launch = true
-
-    tags = {
-        Name = "${var.tag_identifier}-sn_dse_solrspark"
-    }
-}
-resource "aws_route_table_association" "rt_assoc_sn_dse_solrspark" {
-    route_table_id          = aws_route_table.rt_dse.id
-    subnet_id               = aws_subnet.sn_dse_solrspark.id
-}
-*/
-
-# Subnet for user application client
-resource "aws_subnet" "sn_user_app" {
-  vpc_id                  = aws_vpc.vpc_dse.id
-  cidr_block              = var.vpc_cidr_str_userapp
+# Subnet for DSE Alaytics/OLAP
+resource "aws_subnet" "sn_dse_olap_zdm_test" {
+  vpc_id                  = aws_vpc.vpc_dse_zdm_test.id
+  cidr_block              = var.vpc_cidr_str_olap
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "${var.tag_identifier}-sn_user_app"
+    Name = "${var.tag_identifier}-sn_dse_olap_zdm_test"
   }
 }
-resource "aws_route_table_association" "rt_assoc_sn_user_app" {
-  route_table_id = aws_route_table.rt_user_app.id
-  subnet_id      = aws_subnet.sn_user_app.id
+resource "aws_route_table_association" "rt_assoc_sn_dse_olap_zdm_test" {
+  route_table_id = aws_route_table.rt_dse_olap_zdm_test.id
+  subnet_id      = aws_subnet.sn_dse_olap_zdm_test.id
 }
