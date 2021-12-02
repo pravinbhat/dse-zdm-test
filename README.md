@@ -16,14 +16,11 @@
 
 # 1. NOTES
 
-**Updates on ***08/08/2021*****
+**Updates on ***12/01/2021*****
 
 * Retested with: 
-  * Terraform 1.0.3
-  * Ansible version: 2.11.3
-
-* Updates
-  * Add Terraform support for custom VPC and subnets 
+  * Terraform 1.0.11
+  * Ansible version: 2.11.6
 
 ---
 ---
@@ -74,8 +71,7 @@ cqlsh `hostname -I` -u cassandra -p cassandra
 
 # 2. Terraform Introduction and Cluster Topology
 
-The Terraform script will provision one DSE cluster with a single DC with a default of three nodes (the number of nodes per DC is configurable through Terraform variables). 
-The script could support a second DC but for the moment this has been commented out for simplicity. 
+The Terraform script will provision a DSE cluster, a ZDM proxy cluster and a DSE analytics cluster all with a single DC with a default of three nodes (the number of nodes per DC is configurable through Terraform variables). 
 
 # 3. Use Terraform to Launch Infrastructure Resources
 
