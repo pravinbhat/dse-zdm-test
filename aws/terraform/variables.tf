@@ -68,7 +68,7 @@ variable "vpc_cidr_str_vpc" {
 variable "vpc_cidr_str_core" {
   default = "191.100.20.0/24"
 }
-variable "vpc_cidr_str_zdm_test" {
+variable "vpc_cidr_str_zdm_proxy" {
   default = "191.100.30.0/24"
 }
 variable "vpc_cidr_str_olap" {
@@ -79,6 +79,10 @@ variable "dse_core_dc1_type" {
   default = "dse_core_dc1"
 }
 
+variable "zdm_proxy_dc1_type" {
+  default = "zdm_proxy_dc1"
+}
+
 variable "dse_olap_dc1_type" {
   default = "dse_olap_dc1"
 }
@@ -86,15 +90,17 @@ variable "dse_olap_dc1_type" {
 variable "instance_count" {
   type = map(any)
   default = {
-    dse_core_dc1 = 3
-    dse_olap_dc1 = 3
+    dse_core_dc1  = 3
+    zdm_proxy_dc1 = 3
+    dse_olap_dc1  = 3
   }
 }
 
 variable "instance_type" {
   type = map(any)
   default = {
-    dse_core_dc1 = "t2.2xlarge"
-    dse_olap_dc1 = "t2.2xlarge"
+    dse_core_dc1  = "t2.2xlarge"
+    zdm_proxy_dc1 = "t2.large"
+    dse_olap_dc1  = "t2.2xlarge"
   }
 }

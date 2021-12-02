@@ -28,16 +28,11 @@
 ---
 ---
 
-This repository was forked from Yabin Meng's excellent repository  [here](https://github.com/yabinmeng/terradse). The original version contains a much more comprehensive automation suite
-to provision, install and configure a multi-DC DSE cluster monitored by OpsCenter (which stores its monitoring data into a dedicated metrics cluster). I highly recommend to use Yabin's repo
-for general DSE installations that follow the recommended configuration and deployment guidelines.
-
-The automation in this repository has been simplified to provision a simple, single-DC DSE cluster without OpsCenter. This is useful for testing purposes, when a full installation would not be necessary
-and reducing the installation footprint is preferable.
+This repository was forked from Alice's excellent repository  [here](https://github.com/alicel/terradse). That repo provisions a simple, single-DC DSE Core cluster (without OpsCenter). This repo is a customization to support ZDM Testing and includes an additional ZDM Proxy cluster as well as an additional DSE Analytics cluster.
 
 The scripts in this repository have 3 major parts:
-1. Terraform scripts to launch the required AWS resources (EC2 instances, security groups, etc.) based on the target DSE cluster topology.
-2. Ansible playbooks to install and configure DSE on the provisioned AWS EC2 instances.
+1. Terraform scripts to launch the required AWS resources (EC2 instances, security groups, etc.) based on the target DSE (Core & Analytics) + ZDM Proxy cluster topology.
+2. Ansible playbooks to install and configure DSE (Core & Analytics) + ZDM Proxy provisioned AWS EC2 instances.
 3. Linux bash scripts to 
    1. generate the ansible host inventory file (required by the ansible playbooks) from the terraform state output
    2. launch the terraform scripts and ansible playbooks
@@ -98,25 +93,26 @@ In order to run the Terraform script successfully, the following procedures need
 
 ### 3.2.1. Custom VPC and Subnet
 
-All the provisioned AWS resources are created under a custom VPC called **vpc_dse**. If a different custom VPC name is needed, please change it in *vpc.tf* file, as below:
+All the provisioned AWS resources are created under a custom VPC called **vpc_dse_zdm_test**. If a different custom VPC name is needed, please change it in *vpc.tf* file, as below:
 
 ```
-resource "aws_vpc" "vpc_dse" {
-   cidr_block           = var.vpc_cidr_str_vpc
-   enable_dns_hostnames = true
+resource "aws_vpc" "vpc_dse_zdm_test" {
+  cidr_block           = var.vpc_cidr_str_vpc
+  enable_dns_hostnames = true
 
-   tags = {
-     Name = "${var.tag_identifier}-vpc_dse"  
-   }
+  tags = {
+    Name = "${var.tag_identifier}-vpc_dse_zdm_test"
+  }
 }
 ```
 
-There are 2 subnets created under the VPC. The associated IP range of the subnets are listed below:
+There are 3 subnets created under the VPC. The associated IP range of the subnets are listed below:
 
 | Subnet | IP Range |
 | ------ | -------- |
-| Subnet for DSE application cluster (DC1) | 191.100.20.0/24 |
-| Subnet for DSE application Cluster (DC2) (not currently used)| 191.100.30.0/24 |
+| Subnet for DSE Core cluster (DC1) | 191.100.20.0/24 |
+| Subnet for ZDM Proxy cluster (DC1) | 191.100.30.0/24 |
+| Subnet for DSE Olap Cluster (DC1) (not currently used)| 191.100.40.0/24 |
 
 If you want to change the IP range of the subnets, you can change the following variables:
 
@@ -125,8 +121,14 @@ If you want to change the IP range of the subnets, you can change the following 
 variable "vpc_cidr_str_vpc" {
    default = "191.100.0.0/16"
 }
-variable "vpc_cidr_str_cassapp" {
-   default = "191.100.20.0/24"
+variable "vpc_cidr_str_core" {
+  default = "191.100.20.0/24"
+}
+variable "vpc_cidr_str_zdm_proxy" {
+  default = "191.100.30.0/24"
+}
+variable "vpc_cidr_str_olap" {
+  default = "191.100.40.0/24"
 }
 ```
 
@@ -135,20 +137,21 @@ variable "vpc_cidr_str_cassapp" {
 The number and type of AWS EC2 instances are determined at DataCenter (DC) level through terraform variable mappings.
 ```
 variable "instance_count" {
-   type = map
-   default = {
-      dse_app_dc1 = 3
-      // dse_app_dc2 = 3
-   }
+  type = map(any)
+  default = {
+    dse_core_dc1  = 3
+    zdm_proxy_dc1 = 3
+    dse_olap_dc1  = 3
+  }
 }
 
 variable "instance_type" {
-   type = map
-   default = {
-      // t2.2xlarge is the minimal DSE requirement
-      dse_app_dc1 = "t2.2xlarge"
-      // dse_app_dc2 = "t2.2xlarge"
-   }
+  type = map(any)
+  default = {
+    dse_core_dc1  = "t2.2xlarge"
+    zdm_proxy_dc1 = "t2.large"
+    dse_olap_dc1  = "t2.2xlarge"
+  }
 }
 ```
 
@@ -157,19 +160,19 @@ variable "instance_type" {
 The script also creates an AWS key-pair resource that can be associated with the EC2 instances. The AWS key-pair resource is created from a locally generated SSH public key and the corresponding private key can be used to log into the EC2 instances.
 Please note the naming convention of the key (see pre-requisites)
 ```
-resource "aws_key_pair" "dse_terra_ssh" {
-    key_name = var.keyname
-    public_key = file("${var.ssh_key_localpath}/${var.ssh_key_filename}.pub")
+resource "aws_key_pair" "dse-zdm-test-sshkey" {
+  key_name   = format("%s-%s", var.tag_identifier, var.keyname)
+  public_key = file(format("%s/%s.pub", var.ssh_key_localpath, var.ssh_key_filename))
 
-    tags = {
-        Name         = "${var.tag_identifier}-dse_terra_ssh"
-        Environment  = var.env 
-   }
+  tags = {
+    Name        = "${var.tag_identifier}-dse-zdm-test-sshkey"
+    Environment = var.env
+  }
 }
 
-resource "aws_instance" "dse_app_dc1" {
+resource "aws_instance" "dse_core_dc1" {
    ... ...
-   key_name          = aws_key_pair.dse_terra_ssh.key_name
+   key_name       = aws_key_pair.dse-zdm-test-sshkey.key_name
    ... ... 
 }
 ```
@@ -180,15 +183,15 @@ In order for the DSE cluster to work properly, certain ports on the ec2 instance
 * [Securing DataStax Enterprise ports](https://docs.datastax.com/en/security/6.8/security/secFirewallPorts.html)
 
 The script does so by creating the following AWS security group resources:
-1. sg_ssh: allows SSH access from public
-4. sg_dse_node: allows DSE node specific communication
+1. sg_dse_zdm_test_ssh: allows SSH access from public
+2. sg_dse_zdm_test_node: allows DSE node specific communication
 
 Please note that the cluster nodes have a public IP and are reachable from the outside world. 
 
 The code snippet below describes how a security group resource is defined and associated with EC2 instances.
 ```
-resource "aws_security_group" "sg_ssh" {
-   name = "sg_ssh"
+resource "aws_security_group" "sg_dse_zdm_test_ssh" {
+   name = "sg_dse_zdm_test_ssh"
 
    ingress {
       from_port = 22
@@ -209,35 +212,20 @@ resource "aws_security_group" "sg_ssh" {
 
 resource "aws_instance" "dse_app_dc1" {
    ... ...
-   vpc_security_group_ids = [aws_security_group.sg_internal_only.id,aws_security_group.sg_ssh.id,aws_security_group.sg_dse_node.id]
+   vpc_security_group_ids = [
+    aws_security_group.sg_dse_zdm_test_internal_only.id,
+    aws_security_group.sg_dse_zdm_test_ssh.id,
+    aws_security_group.sg_dse_zdm_test_node.id
+   ]
    ... ...
 }
 ```
 
 ### 3.2.5. User Data
 
-One of the key requirements to run DSE cluster is to enable NTP service. The script achieves this through EC2 instance user data. which is provided through a terraform template file. 
-```
-data "template_file" "user_data" {
-   template = <<-EOF
-              #!/bin/bash
-              apt-get update -y
-              apt-get install python-minimal -y
-              apt-get install ntp -y
-              apt-get install ntpstat -y
-              ntpq -pcrv
-              EOF
-}
+One of the key requirements to run DSE cluster is to enable NTP service. 
 
-resource "aws_instance" "dse_app_dc1" {
-   ... ...
-   user_data = data.template_file.user_data.rendered
-   ... ...
-}
-```
-
-Other than NTP service, python (minimal version) is also installed in order for Ansible to work properly. Please note that Java, as another essential software required by DSE and OpsCenter software, 
-is currently installed through Ansible and therefore not listed here as part of the User Data installation. 
+Other than NTP service, python (minimal version) is also installed in order for Ansible to work properly. Please note that Java, as another essential software required by DSE is currently installed through Ansible and therefore not listed here as part of the User Data installation. 
 
 # 4. Generate Ansible Inventory File Automatically
 
