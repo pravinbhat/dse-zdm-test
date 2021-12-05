@@ -234,13 +234,14 @@ A linux script file, ***genansinv.sh***, is providied for this purpose. The scri
 ```
   genansinv.sh [<number_of_seeds_per_dc>]
 ```
-2. Script variable: the name of the application DSE cluster: 
+2. Script variable: the name of the DSE Core, Olap & ZDM Proxy cluster: 
 ```
-  DSE_APPCLUSTER_NAME="OriginCluster"
-```
+  DSE_CORE_CLUSTER_NAME="DseCoreCluster"
+  ZDM_PROXY_CLUSTER_NAME="ZdmProxyCluster"
+  DSE_OLAP_CLUSTER_NAME="DseOlapCluster"```
 ---
 
-The script can be run without any command-line parameters as the defaults are suitable to create a simple Origin cluster.
+The script can be run without any command-line parameters as the defaults are suitable to create the simple clusters needed for ZDM testing.
 
 A template of the generated Ansible inventory file looks like [this](aws//ansible/hosts.template).
 

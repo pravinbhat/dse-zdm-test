@@ -1,18 +1,19 @@
-[dse_app:children]
-dse_app_dc1
+[dse_core:children]
+dse_core_dc1
 
-[dse_app_dc1]
-<dse_app_dc1_srv1_public_ip> private_ip=<dse_app_dc1_srv1_private_ip> seed=true dc=dc1 rack=RAC1 vnode=1 initial_token=
-<dse_app_dc1_srv2_public_ip> private_ip=<dse_app_dc1_srv2_private_ip> seed=false dc=dc1 rack=RAC1 vnode=1 initial_token=
-<dse_app_dc1_srv3_public_ip> private_ip=<dse_app_dc1_srv3_private_ip> seed=false dc=dc1 rack=RAC1 vnode=1 initial_token=
+[dse_core_dc1]
+<dse_core_dc1_srv1_public_ip> private_ip=<dse_core_dc1_srv1_private_ip> seed=true dc=dc1 rack=RAC1 vnode=1 initial_token=
+<dse_core_dc1_srv2_public_ip> private_ip=<dse_core_dc1_srv2_private_ip> seed=false dc=dc1 rack=RAC1 vnode=1 initial_token=
+<dse_core_dc1_srv3_public_ip> private_ip=<dse_core_dc1_srv3_private_ip> seed=false dc=dc1 rack=RAC1 vnode=1 initial_token=
 
 
-[dse_app:vars]
-cluster_name=OriginCluster
+[dse_core:vars]
+cluster_name=DseCoreCluster
 
-[dse_app_dc1:vars]
+[dse_core_dc1:vars]
 solr_enabled=0
 spark_enabled=0
 graph_enabled=0
 auto_bootstrap=1
 internal_auth_enabled=1
+

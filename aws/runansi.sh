@@ -11,9 +11,9 @@ cd ansible
 #echo
 
 echo
-echo ">>>> Setup DSE application cluster <<<<"
+echo ">>>> Setup DSE Core cluster <<<<"
 echo
-ansible-playbook -i hosts dse_app_install.yaml --private-key=~/.ssh/origin_key -u ubuntu
+ansible-playbook -i hosts dse_core_install.yaml --private-key=~/.ssh/origin_key -u ubuntu
 echo
 
 cd ..

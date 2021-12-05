@@ -36,14 +36,14 @@ do
       ## - "##" drops the longest matching prefix
       ## - "#" drops the shortest matching prefix
       ##-----------------
-      ## e.g. "typestr" is like "dse_app_dc1[0]:"
+      ## e.g. "typestr" is like "dse_core_dc1[0]:"
       typestr="${line##*.}"
       ## remove trailing ':' character
       typestr=$(echo "$typestr" | sed 's/\://g')
 
       ## replace '[' to '.' and remove ']'
       ##-----------------
-      ## e.g. "typestr2" is like "dse_app_dc1.0"
+      ## e.g. "typestr2" is like "dse_core_dc1.0"
       typestr2=$(echo "$typestr" | sed 's/\]//' | sed 's/\[/./')
        
       dse_nodetypes+=("$typestr2")
@@ -104,22 +104,24 @@ if [[ "$1" != "" ]]; then
 fi
 
 
-DSE_APPCLUSTER_NAME="OriginCluster"
+DSE_CORE_CLUSTER_NAME="DseCoreCluster"
+ZDM_PROXY_CLUSTER_NAME="ZdmProxyCluster"
+DSE_OLAP_CLUSTER_NAME="DseOlapCluster"
 
 
 # Generate Ansible inventory file for multi-DC DSE cluster (no OpsCenter)
 DSE_ANSINV_FILE="dse_ansHosts"
 
 cat /dev/null > $DSE_ANSINV_FILE
-pmsg "[dse_app:children]" $DSE_ANSINV_FILE
-pmsg "dse_app_dc1" $DSE_ANSINV_FILE
+pmsg "[dse_core:children]" $DSE_ANSINV_FILE
+pmsg "dse_core_dc1" $DSE_ANSINV_FILE
 pmsg "" $DSE_ANSINV_FILE
 
-pmsg "[dse_app_dc1]" $DSE_ANSINV_FILE
+pmsg "[dse_core_dc1]" $DSE_ANSINV_FILE
 seedmarked=0
 for ((i=0; i<${#dse_nodetypes[*]}; i++));
 do
-   if [[ ${dse_nodetypes[i]} == *"dse_app_dc1"* ]]; then
+   if [[ ${dse_nodetypes[i]} == *"dse_core_dc1"* ]]; then
       dc_name=$(echo "${dse_nodetypes[i]}" | cut -d'.' -f1 | cut -d'_' -f3 )
 
       if [[ $seedmarked < $SEED_PER_DC ]]; then
@@ -132,10 +134,10 @@ do
 done
 pmsg "" $DSE_ANSINV_FILE
 
-pmsg "[dse_app:vars]" $DSE_ANSINV_FILE
-pmsg "cluster_name=$DSE_APPCLUSTER_NAME" $DSE_ANSINV_FILE
+pmsg "[dse_core:vars]" $DSE_ANSINV_FILE
+pmsg "cluster_name=$DSE_CORE_CLUSTER_NAME" $DSE_ANSINV_FILE
 pmsg "" $DSE_ANSINV_FILE
-pmsg "[dse_app_dc1:vars]" $DSE_ANSINV_FILE
+pmsg "[dse_core_dc1:vars]" $DSE_ANSINV_FILE
 pmsg "solr_enabled=0" $DSE_ANSINV_FILE
 pmsg "spark_enabled=0" $DSE_ANSINV_FILE
 pmsg "graph_enabled=0" $DSE_ANSINV_FILE
