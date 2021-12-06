@@ -105,8 +105,8 @@ fi
 
 
 DSE_CORE_CLUSTER_NAME="DseCoreCluster"
-ZDM_PROXY_CLUSTER_NAME="ZdmProxyCluster"
 DSE_OLAP_CLUSTER_NAME="DseOlapCluster"
+ZDM_PROXY_CLUSTER_NAME="ZdmProxyCluster"
 
 
 # Generate Ansible inventory file for multi-DC DSE cluster (no OpsCenter)
@@ -134,6 +134,7 @@ do
 done
 pmsg "" $DSE_ANSINV_FILE
 
+
 pmsg "[dse_core:vars]" $DSE_ANSINV_FILE
 pmsg "cluster_name=$DSE_CORE_CLUSTER_NAME" $DSE_ANSINV_FILE
 pmsg "" $DSE_ANSINV_FILE
@@ -145,6 +146,37 @@ pmsg "auto_bootstrap=1" $DSE_ANSINV_FILE
 pmsg "internal_auth_enabled=1" $DSE_ANSINV_FILE
 pmsg "" $DSE_ANSINV_FILE
 
+pmsg "[dse_olap:children]" $DSE_ANSINV_FILE
+pmsg "dse_olap_dc1" $DSE_ANSINV_FILE
+pmsg "" $DSE_ANSINV_FILE
+
+pmsg "[dse_olap_dc1]" $DSE_ANSINV_FILE
+seedmarked=0
+for ((i=0; i<${#dse_nodetypes[*]}; i++));
+do
+   if [[ ${dse_nodetypes[i]} == *"dse_olap_dc1"* ]]; then
+      dc_name=$(echo "${dse_nodetypes[i]}" | cut -d'.' -f1 | cut -d'_' -f3 )
+
+      if [[ $seedmarked < $SEED_PER_DC ]]; then
+         pmsg "${public_ips[i]} private_ip=${private_ips[i]} seed=true dc=$dc_name rack=RAC1 vnode=1 initial_token=" $DSE_ANSINV_FILE
+         seedmarked=$((seedmarked+1))
+      else
+         pmsg "${public_ips[i]} private_ip=${private_ips[i]} seed=false dc=$dc_name rack=RAC1 vnode=1 initial_token=" $DSE_ANSINV_FILE
+      fi
+   fi
+done
+pmsg "" $DSE_ANSINV_FILE
+
+pmsg "[dse_olap:vars]" $DSE_ANSINV_FILE
+pmsg "cluster_name=$DSE_OLAP_CLUSTER_NAME" $DSE_ANSINV_FILE
+pmsg "" $DSE_ANSINV_FILE
+pmsg "[dse_olap_dc1:vars]" $DSE_ANSINV_FILE
+pmsg "solr_enabled=1" $DSE_ANSINV_FILE
+pmsg "spark_enabled=0" $DSE_ANSINV_FILE
+pmsg "graph_enabled=0" $DSE_ANSINV_FILE
+pmsg "auto_bootstrap=1" $DSE_ANSINV_FILE
+pmsg "internal_auth_enabled=1" $DSE_ANSINV_FILE
+pmsg "" $DSE_ANSINV_FILE
 # Copy the generated ansible inventory file to the proper place
 cp $DSE_ANSINV_FILE ./ansible/hosts
 

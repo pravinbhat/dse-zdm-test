@@ -8,11 +8,8 @@ backup_homedir: /home/automaton/dse_update_bkup
 #     for upgrade, dse_ver_target is the version to be upgraded to
 #
 #dse_ver_major: 5.1
-#dse_ver_minor: 19
 #dse_ver_major: 6.0
-#dse_ver_minor: 12
 #dse_ver_major: 6.7
-#dse_ver_minor: 9
 dse_ver_major: 6.8
 dse_ver_minor: 17
 dse_ver_target:  "{{ dse_ver_major }}.{{ dse_ver_minor }}"
@@ -35,7 +32,7 @@ vnode_token_num: 8
 
 ## DSE cluster name and other configuration items
 #
-cluster_name: OriginCluster
+cluster_name: DseTestCluster
 dse_data_homedir: /home/automaton/dse_data
 data_file_directories: "{{ dse_data_homedir }}/cassandra"
 commitlog_directory: "{{ dse_data_homedir }}/commitlog"
