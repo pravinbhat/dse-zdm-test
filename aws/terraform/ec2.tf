@@ -27,6 +27,7 @@ resource "aws_instance" "dse_core_dc1" {
 #
 # EC2 instances for ZDM Proxy cluster, DC1
 # 
+/*
 resource "aws_instance" "zdm_proxy_dc1" {
   ami           = var.ami_id
   instance_type = lookup(var.instance_type, var.zdm_proxy_dc1_type)
@@ -45,6 +46,7 @@ resource "aws_instance" "zdm_proxy_dc1" {
   }
 
 }
+*/
 
 #
 # EC2 instances for DSE olap cluster, DC1

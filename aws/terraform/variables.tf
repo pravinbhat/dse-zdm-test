@@ -100,7 +100,7 @@ variable "instance_type" {
   type = map(any)
   default = {
     dse_core_dc1  = "t2.2xlarge"
-    zdm_proxy_dc1 = "t2.large"
+    zdm_proxy_dc1 = "c5.xlarge"
     dse_olap_dc1  = "t2.2xlarge"
   }
 }

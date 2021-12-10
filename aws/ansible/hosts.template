@@ -28,8 +28,8 @@ dse_olap_dc1
 cluster_name=DseOlapCluster
 
 [dse_olap_dc1:vars]
-solr_enabled=1
-spark_enabled=0
+solr_enabled=0
+spark_enabled=1
 graph_enabled=0
 auto_bootstrap=1
 internal_auth_enabled=1
