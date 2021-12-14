@@ -31,4 +31,8 @@ if [[ "$yesno" == "yes" ]]; then
 fi
 
 terraform output > origin_output.txt
+chmod -x cloudgate_inventory
+cp cloudgate_inventory ../ansible_proxy/
+cp cloudgate_ssh_config ../ansible_proxy/
+
 cd ..
