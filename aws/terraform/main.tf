@@ -1,5 +1,6 @@
 provider "aws" {
-  region = var.region
+  profile = var.cloudgate_aws_profile
+  region  = var.region
 }
 
 # 
@@ -14,3 +15,4 @@ resource "aws_key_pair" "dse-zdm-test-sshkey" {
     Environment = var.env
   }
 }
+

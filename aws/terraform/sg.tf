@@ -40,6 +40,61 @@ resource "aws_security_group" "sg_dse_zdm_test_ssh" {
   }
 }
 
+resource "aws_security_group" "sg_dse_zdm_test_proxy" {
+  name   = "sg_dse_zdm_test_proxy"
+  vpc_id = aws_vpc.vpc_dse_zdm_test.id
+
+  # Allow ssh connection from the public subnet (i.e. monitoring instance only)
+  ingress {
+    cidr_blocks = [var.vpc_cidr_str_zdm_proxy]
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+  }
+
+  // Grafana UI
+  ingress {
+    cidr_blocks = var.whitelisted_inbound_ip_ranges
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
+  }
+  // Prometheus UI
+  ingress {
+    cidr_blocks = var.whitelisted_inbound_ip_ranges
+    from_port   = 9090
+    to_port     = 9090
+    protocol    = "tcp"
+  }
+
+  # Allow Prometheus to pull proxy metrics
+  ingress {
+    cidr_blocks = [var.vpc_cidr_str_zdm_proxy]
+    from_port   = 14001
+    to_port     = 14001
+    protocol    = "tcp"
+  }
+
+  # Allow Prometheus to pull OS node metrics
+  ingress {
+    cidr_blocks = [var.vpc_cidr_str_zdm_proxy]
+    from_port   = 9100
+    to_port     = 9100
+    protocol    = "tcp"
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = var.whitelisted_outbound_ip_ranges
+  }
+
+  tags = {
+    Name = "sg_dse_zdm_test_proxy"
+  }
+}
+
 #
 # Security group rules:
 # - Ports required for proper DSE function
