@@ -145,7 +145,7 @@ variable "instance_type" {
   type = map(any)
   default = {
     dse_core_dc1  = "t2.2xlarge"
-    zdm_proxy_dc1 = "t2.large"
+    zdm_proxy_dc1 = "c5.xlarge"
     dse_olap_dc1  = "t2.2xlarge"
   }
 }
@@ -217,12 +217,6 @@ resource "aws_instance" "dse_app_dc1" {
 }
 ```
 
-### 3.2.5. User Data
-
-One of the key requirements to run DSE cluster is to enable NTP service. 
-
-Other than NTP service, python (minimal version) is also installed in order for Ansible to work properly. Please note that Java, as another essential software required by DSE is currently installed through Ansible and therefore not listed here as part of the User Data installation. 
-
 # 4. Generate Ansible Inventory File Automatically
 
 After the infrastructure instances have been provisioned, we need to install and configure DSE on these instances accordingly, which is through the Ansible framework at [here](https://github.com/yabinmeng/dseansible). 
@@ -238,19 +232,11 @@ A linux script file, ***genansinv.sh***, is providied for this purpose. The scri
 ```
   DSE_CORE_CLUSTER_NAME="DseCoreCluster"
   ZDM_PROXY_CLUSTER_NAME="ZdmProxyCluster"
-  DSE_OLAP_CLUSTER_NAME="DseOlapCluster"```
+  DSE_OLAP_CLUSTER_NAME="DseOlapCluster"
+```
+
 ---
 
 The script can be run without any command-line parameters as the defaults are suitable to create the simple clusters needed for ZDM testing.
 
 A template of the generated Ansible inventory file looks like [this](aws//ansible/hosts.template).
-
-
-# 5. Extended Ansible Framework for DSE and OpsCenter Installation and Configuration
-
-The Ansible framework contains two playbooks:
-
-1. *osparm_change.yaml*: configures OS/Kernel parameters on each node where DSE is installed, as per [Recommended production settings](https://docs.datastax.com/en/dse/6.8/dse-dev/datastax_enterprise/config/configRecommendedSettings.html) from DataStax documentation.
-2. *dse_install.yml*: installs and configures a DSE cluster.
-
-For operational simplicity, a linux script file, ***runansi.sh***, is provided to execute these Ansible playbooks. This can be executed without parameters.
