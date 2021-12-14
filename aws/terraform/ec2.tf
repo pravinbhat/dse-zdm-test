@@ -39,6 +39,7 @@ resource "aws_instance" "zdm_proxy_dc1" {
   vpc_security_group_ids = [
     aws_security_group.sg_dse_zdm_test_internal_only.id,
     aws_security_group.sg_dse_zdm_test_ssh.id,
+    aws_security_group.sg_dse_zdm_test_node.id,
     aws_security_group.sg_dse_zdm_test_proxy.id
   ]
 
